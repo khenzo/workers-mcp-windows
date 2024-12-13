@@ -91,3 +91,9 @@ npx workers-mcp install <local-alias> https://<worker-name>.<my-name>.workers.de
 Prompt Claude with something that causes it to invoke the function in your Worker:
 
 ![image](https://github.com/user-attachments/assets/c16b2631-4eba-4914-8e26-d6ccea0fc578)
+
+### Step 8..♾️: Iterating
+
+After changing your Worker code, you only need to run `npm run deploy` to update both Claude's metadata about your function and your live Worker instance. 
+
+However, if you change the names of your methods, or their parameters, or add or remove methods, Claude will not see the updates until you restart it.
