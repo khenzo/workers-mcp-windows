@@ -94,6 +94,8 @@ export async function generateDocs(filename: string) {
         )
       }
 
+      if (point.name === 'fetch') continue
+
       let returns: Returns = null
       if (point.returns) {
         const [ret, ...rest] = point.returns
