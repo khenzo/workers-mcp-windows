@@ -1,7 +1,7 @@
 import { WorkerEntrypoint } from 'cloudflare:workers'
 import mapValues from 'just-map-values'
 
-export class WorkerMCP<T extends { SHARED_SECRET: string }> {
+export class ProxyToSelf<T extends { SHARED_SECRET: string }> {
   env: T
 
   constructor(readonly worker: WorkerEntrypoint<T>) {
@@ -26,7 +26,9 @@ export class WorkerMCP<T extends { SHARED_SECRET: string }> {
       if (!methodReference) {
         return Response.json({
           toolResult: {
-            content: [{ type: 'text', text: `WorkerEntrypoint ${this.worker.constructor.name} has no method '${method}'` }],
+            content: [
+              { type: 'text', text: `WorkerEntrypoint ${this.worker.constructor.name} has no method '${method}'` },
+            ],
             isError: true,
           },
         })

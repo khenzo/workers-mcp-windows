@@ -1,1 +1,1 @@
-export * from './modules/WorkerMCP'
+export * from './modules/ProxyToSelf'
