@@ -1,6 +1,6 @@
 {
   "name": "workers-mcp",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "MCP transport to your own Cloudflare Worker",
   "license": "MIT",
   "author": "Glen Maddern",
