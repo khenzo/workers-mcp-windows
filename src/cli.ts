@@ -32,17 +32,22 @@ if (cmd === 'docgen') {
   await localProxy(args[0], args[1], args[2])
 } else if (cmd === 'help') {
   console.log(`
-${chalk.green('[[ WORKERS MCP ]]')}
+💪 Congratulations on installing ${chalk.green('workers-mcp')} 😎
 
-1️⃣   run ${chalk.yellow('workers-mcp docgen src/index.ts')} before each 'wrangler deploy', e.g.
+Get started in 4 easy steps:
+
+${chalk.underline.green(`Step 1`)}
+Add ${chalk.yellow('workers-mcp docgen src/index.ts')} as part of your 'wrangler deploy' step, e.g.
 ${chalk.gray(`
   "scripts": {
     "deploy:worker": "workers-mcp docgen src/index.ts && wrangler deploy"
   }
 `)}
-
-2️⃣   Within your Worker, add ${chalk.yellow('ProxyToSelf')} to your .fetch handler:
+${chalk.underline.green(`Step 2`)}
+Within your Worker, add ${chalk.yellow('ProxyToSelf')} to your .fetch handler:
 ${chalk.gray(`
+  import { ProxyToSelf } from 'workers-mcp'
+  
   class MyWorker extends WorkerEntrypoint {
     // rpc methods here
     
@@ -51,11 +56,19 @@ ${chalk.gray(`
     }
   }
 `)}
+${chalk.underline.green(`Step 3`)}
+Generate a new shared-secret and do the first deployment dance:
 
-3️⃣   Generate a new shared-secret for auth, run ${chalk.yellow('workers-mcp secret generate')}
-    then upload it with ${chalk.yellow('workers-mcp secret upload')}.
+• ${chalk.yellow('npx workers-mcp secret generate')}
+• ${chalk.yellow('npm run deploy')}
+• ${chalk.yellow('workers-mcp secret upload')}
+• (optional) ${chalk.yellow('npx wrangler types')}
 
-4️⃣   Deploy your worker then install it with ${chalk.yellow('npx workers-mcp install <name-within-claude> <url-to-your-hosted-worker>')}
+${chalk.underline.green(`Step 4`)}
+Install it, choosing a new name & using the URL from your first deployment above:
+${chalk.yellow('npx workers-mcp install <name-within-claude> <url-to-your-hosted-worker>')}
+
+🎉 You're done! Now start up Claude Desktop and get prompting!
 `)
 } else {
   console.log(`Unknown command: ${cmd}`)
