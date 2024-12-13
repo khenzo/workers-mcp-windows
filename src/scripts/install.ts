@@ -1,11 +1,8 @@
 import path from 'node:path'
 import os from 'node:os'
-import { fileURLToPath } from 'url'
 import fs from 'node:fs'
 import chalk from 'chalk'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+import npmWhich from 'npm-which'
 
 export async function install(claude_name: string, workers_url: string) {
   if (!claude_name || !workers_url) {
@@ -21,13 +18,8 @@ export async function install(claude_name: string, workers_url: string) {
     'claude_desktop_config.json',
   )
   const mcpConfig = {
-    command: 'node',
-    args: [
-      path.resolve(__dirname, '../node_modules/tsx/dist/cli.mjs'),
-      path.join(__dirname, 'local-proxy.ts'),
-      claude_name,
-      workers_url,
-    ],
+    command: npmWhich(process.cwd()).sync('workers-mcp'),
+    args: ['run', claude_name, workers_url, process.cwd()],
     env: process.env.NODE_EXTRA_CA_CERTS ? { NODE_EXTRA_CA_CERTS: process.env.NODE_EXTRA_CA_CERTS } : {},
   }
 

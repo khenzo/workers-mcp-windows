@@ -4,6 +4,7 @@ import chalk from 'chalk'
 import { generateDocs } from './scripts/generate-docs'
 import { generateSecret } from './scripts/generate-secret'
 import { install } from './scripts/install'
+import { localProxy } from './scripts/local-proxy'
 
 export function log(...args: any[]) {
   const msg = `[DEBUG ${new Date().toISOString()}] ${args.join(' ')}\n`
@@ -27,6 +28,8 @@ if (cmd === 'docgen') {
   await generateSecret(args[0])
 } else if (cmd === 'install') {
   await install(args[0], args[1])
+} else if (cmd === 'run') {
+  await localProxy(args[0], args[1], args[2])
 } else if (cmd === 'help') {
   console.log(`
 ${chalk.green('[[ WORKERS MCP ]]')}

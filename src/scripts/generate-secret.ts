@@ -4,16 +4,16 @@ import chalk from 'chalk'
 import { spawn } from 'child_process'
 
 export async function generateSecret(command: string) {
-  const secretPath = './.dev.vars'
+  const secret_path = './.dev.vars'
 
   if (command === 'generate') {
     console.log(`Generating shared secret...`)
-    const randomBytes = crypto.randomBytes(32)
-    const randomString = randomBytes.toString('hex')
+    const random_bytes = crypto.randomBytes(32)
+    const random_string = random_bytes.toString('hex')
 
-    const dev_vars = [`SHARED_SECRET=${randomString}`]
-    if (fs.existsSync(secretPath)) {
-      fs.readFileSync(secretPath, 'utf8')
+    const dev_vars = [`SHARED_SECRET=${random_string}`]
+    if (fs.existsSync(secret_path)) {
+      fs.readFileSync(secret_path, 'utf8')
         .split('\n')
         .forEach((line) => {
           if (!line.startsWith('SHARED_SECRET=')) {
@@ -21,11 +21,11 @@ export async function generateSecret(command: string) {
           }
         })
     }
-    fs.writeFileSync(secretPath, dev_vars.join('\n'))
+    fs.writeFileSync(secret_path, dev_vars.join('\n'))
     console.log(chalk.yellow(`Wrote SHARED_SECRET to .dev.vars`))
   } else if (command === 'upload') {
     const secret = fs
-      .readFileSync(secretPath, 'utf8')
+      .readFileSync(secret_path, 'utf8')
       .split('\n')
       .map((line) => {
         const match = line.match(/SHARED_SECRET=(.*)/)
