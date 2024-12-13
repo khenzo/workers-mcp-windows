@@ -1,0 +1,47 @@
+{
+  "name": "workers-mcp",
+  "version": "0.0.1",
+  "description": "MCP transport to your own Cloudflare Worker",
+  "license": "MIT",
+  "author": "Glen Maddern",
+  "homepage": "https://github.com/geelen/mcp-workers",
+  "bugs": "https://github.com/geelen/mcp-workers/issues",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "access": "public",
+  "bin": {
+    "workers-mcp": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsup src/*.ts --dts --format esm",
+    "postbuild": "shx chmod +x dist/*.js",
+    "check": "tsc --noEmit",
+    "build:watch": "pnpm build --watch"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241205.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.10.2",
+    "prettier": "^3.4.2",
+    "shx": "^0.3.4",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=16.17.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.3",
+    "chalk": "^5.3.0",
+    "fs-extra": "^11.2.0",
+    "jsdoc-api": "^9.3.4",
+    "just-map-values": "^3.2.0",
+    "ts-blank-space": "^0.4.4"
+  }
+}
