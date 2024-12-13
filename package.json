@@ -45,6 +45,7 @@
     "jsdoc-api": "^9.3.4",
     "just-map-values": "^3.2.0",
     "npm-which": "^3.0.1",
+    "tmp-promise": "^3.0.3",
     "ts-blank-space": "^0.4.4",
     "tsx": "^4.19.2"
   }
