@@ -57,11 +57,11 @@ ${chalk.gray(`
   }
 `)}
 ${chalk.underline.green(`Step 3`)}
-Generate a new shared-secret and do the first deployment dance:
+Generate a new shared secret and do the first-deployment dance:
 
 • ${chalk.yellow('npx workers-mcp secret generate')}
 • ${chalk.yellow('npm run deploy')}
-• ${chalk.yellow('workers-mcp secret upload')}
+• ${chalk.yellow('npx workers-mcp secret upload')}
 • (optional) ${chalk.yellow('npx wrangler types')}
 
 ${chalk.underline.green(`Step 4`)}
