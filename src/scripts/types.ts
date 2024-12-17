@@ -17,4 +17,5 @@ export type EntrypointDoc = {
   exported_as: string | null
   methods: Array<Method>
   statics: Record<string, Array<StaticProperty>>
+  proxy?: { entrypoint: string; strategy: 'prepend-session-id' | 'singleton' }
 }

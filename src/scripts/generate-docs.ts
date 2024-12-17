@@ -5,40 +5,44 @@ import jsdoc from 'jsdoc-api'
 import { EntrypointDoc, Param, Returns, StaticProperty } from './types'
 import path from 'node:path'
 import chalk from 'chalk'
+import filter from 'just-filter-object'
+
+type JSDocPoint = {
+  comment: string
+  meta: {
+    range: [number, number]
+    filename: string
+    lineno: number
+    columno: number
+    path: string
+    code: {
+      id: string
+      name: string
+      type: 'FunctionExpression' | 'ClassDeclaration' | 'MethodDefinition' | 'ClassProperty' | 'Literal'
+      paramnames: string[]
+    }
+  }
+  undocumented: boolean
+  classdesc?: string
+  description: string
+  name: string
+  longname: string
+  kind: 'function' | 'member' | 'class'
+  memberof?: string
+  scope: 'global' | 'static' | 'instance'
+  async?: boolean
+  params?: Array<{ type: { names: string[] }; description: string; name: string; optional?: boolean }>
+  returns?: Array<{ type: { names: string[] }; description: string }>
+  examples?: string[]
+  ignore?: boolean
+  tags?: Array<{ title: string; originalTitle: string; text: string; value: string }>
+  access?: 'private'
+}
 
 export async function generateDocs(filename: string) {
   if (!filename) throw new Error(`Missing filename`)
   const source = tsBlankSpace(fs.readFileSync(filename, 'utf8'))
 
-  type JSDocPoint = {
-    comment: string
-    meta: {
-      range: [number, number]
-      filename: string
-      lineno: number
-      columno: number
-      path: string
-      code: {
-        id: string
-        name: string
-        type: 'FunctionExpression' | 'ClassDeclaration' | 'MethodDefinition' | 'ClassProperty' | 'Literal'
-        paramnames: string[]
-      }
-    }
-    undocumented: boolean
-    classdesc?: string
-    description: string
-    name: string
-    longname: string
-    kind: 'function' | 'member' | 'class'
-    memberof?: string
-    scope: 'global' | 'static' | 'instance'
-    async?: boolean
-    params?: Array<{ type: { names: string[] }; description: string; name: string; optional?: boolean }>
-    returns?: Array<{ type: { names: string[] }; description: string }>
-    examples?: string[]
-    ignore?: boolean
-  }
   const data = ((await jsdoc.explain({ source: source, cache: true })) as Array<JSDocPoint>)
     // Pretend ignored points don't exist
     .filter((point) => !point.ignore)
@@ -51,7 +55,7 @@ export async function generateDocs(filename: string) {
     // console.dir(point, { depth: null })
     // if (point.meta) console.log(source.substring(...point.meta.range))
     if (point.kind === 'class' && point.meta?.code?.type === 'ClassDeclaration') {
-      let exported_as = null
+      let exported_as = undefined
       let name = point.meta.code.name
       if (name.startsWith('exports.')) {
         name = name.slice('exports.'.length)
@@ -64,14 +68,23 @@ export async function generateDocs(filename: string) {
         default_export = { class_name: name, range: point.meta.range }
       }
 
-      // console.dir(point, { depth: null })
-      exported_classes[name] = Object.assign(exported_classes[name] || {}, {
-        exported_as,
-        description: point.classdesc! || null,
-        methods: [],
-        statics: {},
-      })
-      // console.log(exported_classes)
+      const proxy = point.tags?.find(({ title }) => title.startsWith(`do-proxy-`))
+
+      console.dir(point, { depth: null })
+      exported_classes[name] = Object.assign(
+        exported_classes[name] || {},
+        filter(
+          {
+            exported_as,
+            description: point.classdesc! || null,
+            methods: [],
+            statics: {},
+            proxy: proxy ? { entrypoint: proxy.value, strategy: proxy.title.slice('do-proxy-'.length) } : undefined,
+          },
+          (_, v) => v !== undefined,
+        ),
+      )
+      console.log(exported_classes)
     }
   }
 
@@ -94,12 +107,12 @@ export async function generateDocs(filename: string) {
         )
       }
 
-      if (point.name === 'fetch') continue
+      if (point.access === 'private') continue
 
       let returns: Returns = null
       if (point.returns) {
         const [ret, ...rest] = point.returns
-        if (!ret || rest.length > 0 || ret.type.names.length !== 1) {
+        if (!ret || rest.length > 0 || ret.type?.names.length !== 1) {
           console.log(`WARN: unexpected returns value for ${JSON.stringify(point)}`)
         }
         returns = { description: ret.description, type: ret.type.names[0] }
@@ -177,6 +190,37 @@ export async function generateDocs(filename: string) {
       } else {
         console.log(`WARN: couldn't find which class to export for ${JSON.stringify(point)}`)
       }
+    }
+  }
+
+  /* SEARCH FOR @do-proxy classes */
+  for (const [name, cls] of Object.entries(exported_classes)) {
+    if (cls.proxy) {
+      const target = exported_classes[cls.proxy.entrypoint]
+      if (!target)
+        console.log(`WARN: couldn't find which class to proxy for ${name}. Looking for ${cls.proxy.entrypoint}`)
+
+      for (const method of target.methods) {
+        cls.methods.push({
+          ...method,
+          ...(cls.proxy.strategy === 'prepend-session-id'
+            ? {
+                params: [
+                  {
+                    type: 'string',
+                    name: 'sessionID',
+                    description:
+                      'A unique identifier to be used for all tool calls during this conversation. Unless the user specifies explicitly which "session identifier" to use, the system should generate a completely random string of at least 8 characters.',
+                  },
+                  ...method.params,
+                ],
+              }
+            : {}),
+        })
+      }
+      console.log(target.methods)
+
+      delete cls.proxy
     }
   }
 
