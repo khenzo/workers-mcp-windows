@@ -48,6 +48,6 @@ ${chalk.yellow('npx workers-mcp install:claude <name-within-claude> <url-to-your
 
 ${DELIM}
 Note: the above instructions are for manual installation.
-Run ${chalk.green('npx workers install')} for a guided installation that automates this process.
+Run ${chalk.green('npx workers setup')} for a guided installation that automates this process.
 ${DELIM}`)
 }

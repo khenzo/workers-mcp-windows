@@ -5,7 +5,7 @@ import { secret } from './scripts/secret'
 import { installClaude } from './scripts/install-claude'
 import { localProxy } from './scripts/local-proxy'
 import { help } from './scripts/help'
-import { guidedInstallation } from './scripts/guided-installation'
+import { guidedInstallation } from './scripts/setup'
 
 export function log(...args: any[]) {
   const msg = `[DEBUG ${new Date().toISOString()}] ${args.join(' ')}\n`
@@ -25,9 +25,9 @@ const [cmd, ...args] = process.argv.slice(2)
 
 if (cmd === 'docgen') {
   await generateDocs(args[0])
-} else if (cmd === 'install') {
+} else if (cmd === 'setup') {
   await guidedInstallation()
-} else if (cmd === 'install:claude') {
+} else if (cmd === 'secret') {
   await secret(args[0])
 } else if (cmd === 'install:claude') {
   await installClaude(args[0], args[1])

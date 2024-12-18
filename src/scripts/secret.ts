@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import crypto from 'node:crypto'
 import chalk from 'chalk'
-import { runWranglerWithStdin } from './utils'
+import { runWithStdin } from './utils'
 
 export const SECRET_PATH = '.dev.vars'
 
@@ -35,7 +35,7 @@ export function generateSecret() {
 }
 
 export async function uploadSecret(secret: string) {
-  await runWranglerWithStdin(['secret', 'put', 'SHARED_SECRET'], secret)
+  await runWithStdin('npx', ['wrangler', 'secret', 'put', 'SHARED_SECRET'], secret)
 }
 
 export async function secret(command: string) {
