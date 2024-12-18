@@ -1,4 +1,4 @@
-import { confirm, intro, log, outro, select, text } from '@clack/prompts'
+import { confirm, intro, isCancel, log, outro, select, text } from '@clack/prompts'
 import chalk from 'chalk'
 import fs from 'fs-extra'
 import path from 'path'
@@ -75,7 +75,9 @@ async function addDocgen(index_script: string) {
         chalk.green(`+++ "${key}": "${new_value}"`),
       ].join('\n'),
     )
-    if (await confirm({ message: 'Proceed?' })) {
+    const confirmed = await confirm({ message: 'Proceed?' })
+    if (isCancel(confirmed)) throw new Error(`Cancelled.`)
+    if (confirmed) {
       scripts[key] = new_value
       await fs.writeJSON(package_json_path, package_json, { spaces: 2 })
       log.success(`Updated package.json!`)
@@ -91,7 +93,8 @@ async function addDocgen(index_script: string) {
         .map((key) => ({ value: key, label: `"${key}"` }))
         .concat({ value: '', label: '<skip>' }),
     })
-    if (choice === '' || typeof choice !== 'string') {
+    if (isCancel(choice)) throw new Error(`Cancelled.`)
+    if (choice === '') {
       log.warn(`Skipping! You should add ${chalk.yellow(`'workers-mcp docgen ${index_script}'`)} yourself manually.`)
     } else {
       const value = scripts[choice]
@@ -125,18 +128,20 @@ async function generateAndUploadSecret() {
       log.success(`SHARED_SECRET already present in ${chalk.yellow(SECRET_PATH)}. It may already be uploaded.`)
       log.warn(`To reupload it, run ${chalk.yellow('npx workers-mcp secret upload')} manually.`)
       secret = existing_secret
-      do_upload = false
-      // do_upload = (await confirm({
-      //   message: `Do you want to rerun ${chalk.yellow('wrangler secret put')} just in case?`,
-      //   initialValue: false,
-      // })) as boolean
+      const confirmed = await confirm({
+        message: `Do you want to rerun ${chalk.yellow('wrangler secret put')} just in case?`,
+        initialValue: false,
+      })
+      if (isCancel(confirmed)) throw new Error(`Cancelled.`)
+      do_upload = confirmed
     } else {
       log.warn(`SHARED_SECRET present in ${chalk.yellow(SECRET_PATH)} but appears invalid.`)
-      if (
-        await confirm({
-          message: `Do you want to regenerate it?`,
-        })
-      ) {
+      const confirmed = await confirm({
+        message: `Do you want to regenerate it?`,
+      })
+
+      if (isCancel(confirmed)) throw new Error(`Cancelled.`)
+      if (confirmed) {
         secret = generateSecret()
         log.success(`Generated and stored SHARED_SECRET in .dev.vars`)
       } else {
@@ -184,11 +189,11 @@ async function replaceSource(index_script: string) {
   if (imports_a_proxy_method && exports_an_entrypoint) {
     log.success(`Your ${chalk.yellow(index_script)} seems to be already set up! Skipping...`)
   } else {
-    if (
-      await confirm({
-        message: `Would you like to replace the contents of ${chalk.yellow(index_script)} with the above example code?`,
-      })
-    ) {
+    const confirmed = await confirm({
+      message: `Would you like to replace the contents of ${chalk.yellow(index_script)} with the above example code?`,
+    })
+    if (isCancel(confirmed)) throw new Error(`Cancelled.`)
+    if (confirmed) {
       await fs.writeFile(index_script, example_script)
       log.success(`Success! ${chalk.yellow(index_script)} written.`)
     }
@@ -221,10 +226,11 @@ async function doDeploy(index_script: string, script_name?: string) {
 async function install(url: string) {
   log.info(`${chalk.bold('Step 5')}: installing on Claude Desktop`)
 
-  const claude_name = (await text({
+  const claude_name = await text({
     message: 'What name should we use for this worker within Claude?',
     initialValue: path.basename(process.cwd()),
-  })) as string
+  })
+  if (isCancel(claude_name)) throw new Error(`Cancelled.`)
 
   if (claude_name === '') {
     log.warn(
