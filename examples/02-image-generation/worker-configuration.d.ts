@@ -2,4 +2,5 @@
 
 interface Env {
 	SHARED_SECRET: string;
+	AI: Ai;
 }
