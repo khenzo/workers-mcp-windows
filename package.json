@@ -38,6 +38,7 @@
     "node": ">=16.17.0"
   },
   "dependencies": {
+    "@clack/prompts": "^0.8.2",
     "@modelcontextprotocol/sdk": "^1.0.3",
     "@silvia-odwyer/photon-node": "^0.3.3",
     "chalk": "^5.3.0",
