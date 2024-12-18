@@ -70,7 +70,7 @@ export async function generateDocs(filename: string) {
 
       const proxy = point.tags?.find(({ title }) => title.startsWith(`do-proxy-`))
 
-      console.dir(point, { depth: null })
+      // console.dir(point, { depth: null })
       exported_classes[name] = Object.assign(
         exported_classes[name] || {},
         filter(
@@ -84,7 +84,7 @@ export async function generateDocs(filename: string) {
           (_, v) => v !== undefined,
         ),
       )
-      console.log(exported_classes)
+      // console.log(exported_classes)
     }
   }
 
@@ -218,7 +218,7 @@ export async function generateDocs(filename: string) {
             : {}),
         })
       }
-      console.log(target.methods)
+      // console.log(target.methods)
 
       delete cls.proxy
     }

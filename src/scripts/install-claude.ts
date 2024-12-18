@@ -4,9 +4,9 @@ import fs from 'node:fs'
 import chalk from 'chalk'
 import npmWhich from 'npm-which'
 
-export async function install(claude_name: string, workers_url: string) {
+export async function installClaude(claude_name: string, workers_url: string) {
   if (!claude_name || !workers_url) {
-    console.error('usage: npx workers-mcp install <claude_name> <workers_url>')
+    console.error('usage: npx workers-mcp install:claude <claude_name> <workers_url>')
     process.exit(1)
   }
 
