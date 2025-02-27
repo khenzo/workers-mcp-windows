@@ -82,6 +82,7 @@ For example, if your config file looks like:
     }
   }
 }
+```
 
 In Cursor, create an MCP server entry with:
 * type: `command`
@@ -106,6 +107,7 @@ For Windsurf and other MCP clients, update your configuration file to include yo
     }
   }
 }
+```
 
 Make sure to replace the placeholders with your actual server name, URL, and project path.
 
