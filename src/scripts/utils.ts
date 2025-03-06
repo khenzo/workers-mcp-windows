@@ -1,4 +1,4 @@
-import { spawn } from 'child_process'
+import { spawn } from 'cross-spawn'
 
 export async function runCommand(command: string, args: string[]): Promise<string> {
   const child = spawn(command, args, {
